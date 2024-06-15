@@ -8,7 +8,7 @@
     "build": "node esbuild.config.mjs",
     "watch": "tsc -w",
     "test": "jest",
-    "swagger": "npx open-swagger-ui --open ./swagger.json",
+    "swagger": "npx open-swagger-ui --open ./swagger.yaml",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:diff": "cdk diff",
