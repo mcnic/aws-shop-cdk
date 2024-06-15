@@ -22,6 +22,3 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 1. use `cdk synth && cdk deploy` for deploy
 1. use `cdk destroy` for destroy
 
-## Task-03 (links will be remove after same time)
-
-- [link](http://rs-aws-dev.s3-website.us-east-2.amazonaws.com/)

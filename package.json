@@ -8,11 +8,12 @@
     "build": "node esbuild.config.mjs",
     "watch": "tsc -w",
     "test": "jest",
+    "swagger": "npx open-swagger-ui --open ./swagger.json",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:diff": "cdk diff",
-    "cdk:deploy": "npm run build && cdk synth && cdk deploy",
-    "cdk:destroy": "cdk destroy"
+    "deploy": "npm run build && cdk synth && cdk deploy",
+    "destroy": "cdk destroy"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.138",
@@ -29,6 +30,7 @@
     "@aws-sdk/client-lambda": "^3.596.0",
     "aws-cdk-lib": "2.145.0",
     "constructs": "^10.0.0",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "swagger-ui-express": "^5.0.1"
   }
 }

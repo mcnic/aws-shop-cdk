@@ -1,0 +1,106 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "AWS-SHOP",
+    "description": "Products Service API",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "https://sm7jmgfua1.execute-api.us-east-1.amazonaws.com/prod",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "description": "List all products",
+        "responses": {
+          "200": {
+            "description": "Successfully fetched all products from JSONPlaceholder",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "number"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "example": {
+                      "description": "Short Product Description4",
+                      "id": "7567ec4b-b10c-48c5-9345-fc73348a80a1",
+                      "price": 15,
+                      "title": "ProductTest"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{uuid}": {
+      "get": {
+        "description": "one products data",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "number"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "example": {
+                      "description": "Short Product Description4",
+                      "id": "7567ec4b-b10c-48c5-9345-fc73348a80a1",
+                      "price": 15,
+                      "title": "ProductTest"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "tags": ["Generic"]
+      }
+    }
+  }
+}
