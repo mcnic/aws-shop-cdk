@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://sm7jmgfua1.execute-api.us-east-1.amazonaws.com/prod",
+      "url": "https://6563hjfn25.execute-api.us-east-1.amazonaws.com/prod/",
       "description": "Production server"
     }
   ],
