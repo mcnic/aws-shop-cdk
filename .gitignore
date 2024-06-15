@@ -3,6 +3,9 @@
 *.d.ts
 node_modules
 
+#staging dir for lambda's
+dist
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out
