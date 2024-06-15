@@ -55,12 +55,20 @@ export const handler = async (
   return product
     ? {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET',
+        },
         body: JSON.stringify(product),
       }
     : {
         statusCode: 404,
-        headers: { 'Content-Type': 'text/plain' },
+        headers: {
+          'Content-Type': 'text/plain',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET',
+        },
         body: 'Product not found',
       };
 };

@@ -8,25 +8,17 @@ export class Task03 extends Construct {
   constructor(parent: Stack, name: string) {
     super(parent, name);
 
-    const getProductsListLambda = new Function(
-      this,
-      'getProductsListLambda',
-      {
-        runtime: Runtime.NODEJS_20_X,
-        code: Code.fromAsset('dist/lambda/getProductsList'),
-        handler: 'getProductsList.handler',
-      }
-    );
+    const getProductsListLambda = new Function(this, 'getProductsListLambda', {
+      runtime: Runtime.NODEJS_20_X,
+      code: Code.fromAsset('dist/lambda/getProductsList'),
+      handler: 'getProductsList.handler',
+    });
 
-    const getProductsByIdLambda = new Function(
-      this,
-      'getProductsByIdLambda',
-      {
-        runtime: Runtime.NODEJS_20_X,
-        code: Code.fromAsset('dist/lambda/getProductsById'),
-        handler: 'getProductsById.handler',
-      }
-    );
+    const getProductsByIdLambda = new Function(this, 'getProductsByIdLambda', {
+      runtime: Runtime.NODEJS_20_X,
+      code: Code.fromAsset('dist/lambda/getProductsById'),
+      handler: 'getProductsById.handler',
+    });
 
     const getAllIntegration = new LambdaIntegration(getProductsListLambda);
     const getOneIntegration = new LambdaIntegration(getProductsByIdLambda);

@@ -51,7 +51,11 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   return {
     statusCode: 200,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET',
+    },
     body: JSON.stringify(products),
   };
 };
