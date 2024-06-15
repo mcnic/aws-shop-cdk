@@ -5,8 +5,8 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { handler as getProductsListHandler } from '../lambda/getProductsList';
 import { handler as getProductsByIdHandler } from '../lambda/getProductsById';
 
-const CORRECT_ID = '7567ec4b-b10c-48c5-9345-fc73348a80a1'
-const WRONG_ID = 'WRONG_ID'
+const CORRECT_ID = '7567ec4b-b10c-48c5-9345-fc73348a80a1';
+const WRONG_ID = 'WRONG_ID';
 
 let appStack: Stack;
 let appTemplate: Template;
@@ -81,45 +81,5 @@ describe('getProductsList Lambda', () => {
     expect(typeof firstElem.id === 'string').toBe(true);
     expect(typeof firstElem.price === 'number').toBe(true);
     expect(typeof firstElem.title === 'string').toBe(true);
-  });
-});
-
-describe('getProductsById Lambda', () => {
-  test('Lambda created', () => {
-    appTemplate.hasResourceProperties('AWS::Lambda::Function', {
-      Handler: 'getProductsById.handler',
-    });
-  });
-  test('correct result', async () => {
-    const response = await getProductsByIdHandler({
-      ...event,
-      pathParameters: {
-        ...event.pathParameters,
-        id: CORRECT_ID,
-      },
-    });
-
-    expect(response.statusCode).toBe(200);
-
-    const product = JSON.parse(response.body);
-
-    expect(Array.isArray(product)).toBe(false);
-
-    expect(typeof product.description === 'string').toBe(true);
-    expect(typeof product.id === 'string').toBe(true);
-    expect(typeof product.price === 'number').toBe(true);
-    expect(typeof product.title === 'string').toBe(true);
-  });
-
-  test('missed result', async () => {
-    const response = await getProductsByIdHandler({
-      ...event,
-      pathParameters: {
-        ...event.pathParameters,
-        id: WRONG_ID,
-      },
-    });
-    expect(response.statusCode).toBe(404);
-    expect(response.body).toBe('Product not found');
   });
 });
