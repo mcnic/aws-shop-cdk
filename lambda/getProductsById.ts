@@ -50,10 +50,17 @@ export const handler = async (
   event: any = {}
 ): Promise<APIGatewayProxyResult> => {
   const id = event.pathParameters.id;
-  const product = products.find((e) => e.id === id) || "not found";
-  return {
-    statusCode: 200,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(product),
-  };
+  const product = products.find((e) => e.id === id);
+
+  return product
+    ? {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product),
+      }
+    : {
+        statusCode: 404,
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'Product not found',
+      };
 };
