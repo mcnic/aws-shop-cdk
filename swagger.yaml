@@ -19,20 +19,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    description:
-                      type: string
-                      example: Short Product Description4
-                    id:
-                      type: string
-                      example: 7567ec4b-b10c-48c5-9345-fc73348a80a1
-                    price:
-                      type: number
-                      example: 15
-                    title:
-                      type: string
-                      example: ProductTest
+                  $ref: '#/components/schemas/Product'
   /products/{uuid}:
     get:
       summary: Get product by ID
@@ -43,20 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  description:
-                    type: string
-                    example: Short Product Description4
-                  id:
-                    type: string
-                    example: 7567ec4b-b10c-48c5-9345-fc73348a80a1
-                  price:
-                    type: number
-                    example: 15
-                  title:
-                    type: string
-                    example: ProductTest
+                $ref: '#/components/schemas/Product'
         '404':
           description: wrong ID
           content:
@@ -72,3 +46,21 @@ paths:
           type: string
           format: string
       tags: [Generic]
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        description:
+          type: string
+          example: Short Product Description4
+        id:
+          type: string
+          example: 7567ec4b-b10c-48c5-9345-fc73348a80a1
+        title:
+          type: string
+          example: ProductTest
+        price:
+          type: number
+          format: float
+          example: 15
