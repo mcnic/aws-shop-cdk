@@ -13,6 +13,7 @@
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:diff": "cdk diff",
+    "seed": "node ./lib/seed.mjs",
     "deploy": "npm run build && cdk synth && cdk deploy",
     "destroy": "cdk destroy"
   },
