@@ -39,6 +39,7 @@ export class Task04 extends Construct {
       handler: 'getProductsList.handler',
       environment: {
         PRODUCTS_TABLE_NAME: productsTable.tableName,
+        STOCKS_TABLE_NAME: stocksTable.tableName
       },
     });
 
