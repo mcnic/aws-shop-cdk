@@ -43,34 +43,37 @@ export class Task04 extends Construct {
       },
     });
 
-    const getProductByIdHandler = new Function(this, 'GetProductsByIdHandler', {
+    const getProductByIdHandler = new Function(this, 'getProductsByIdHandler', {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset('dist/lambda'),
       handler: 'getProductsById.handler',
       environment: {
         PRODUCTS_TABLE_NAME: productsTable.tableName,
+        STOCKS_TABLE_NAME: stocksTable.tableName
       },
     });
 
-    const addProductHandler = new Function(this, 'AddProductHandler', {
+    const createProductHandler = new Function(this, 'createProductHandler', {
       runtime: Runtime.NODEJS_18_X,
       code: Code.fromAsset('dist/lambda'),
-      handler: 'addProduct.handler',
+      handler: 'createProduct.handler',
       environment: {
         PRODUCTS_TABLE_NAME: productsTable.tableName,
+        STOCKS_TABLE_NAME: stocksTable.tableName
       },
     });
 
     // grant permissions for tables
-    productsTable.grantReadWriteData(getProductsHandler);
-    productsTable.grantReadWriteData(getProductByIdHandler);
-    productsTable.grantReadWriteData(addProductHandler);
-    stocksTable.grantReadWriteData(getProductsHandler);
+    productsTable.grantReadData(getProductsHandler);
+    productsTable.grantReadData(getProductByIdHandler);
+    productsTable.grantWriteData(createProductHandler);
+    stocksTable.grantReadData(getProductsHandler);
+    stocksTable.grantWriteData(createProductHandler);
 
     // add API gateways
     const getAllIntegration = new LambdaIntegration(getProductsHandler);
     const getOneIntegration = new LambdaIntegration(getProductByIdHandler);
-    const putOneIntegration = new LambdaIntegration(addProductHandler);
+    const putOneIntegration = new LambdaIntegration(createProductHandler);
 
     const api = new LambdaRestApi(this, 'AWSShopNewApi', {
       handler: getProductsHandler,
@@ -79,9 +82,9 @@ export class Task04 extends Construct {
 
     const items = api.root.addResource('products');
     items.addMethod('GET', getAllIntegration);
+    items.addMethod('POST', putOneIntegration);
 
     const singleItem = items.addResource('{id}');
     singleItem.addMethod('GET', getOneIntegration);
-    singleItem.addMethod('POST', putOneIntegration);
   }
 }
