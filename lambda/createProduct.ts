@@ -35,7 +35,7 @@ export const handler = async function (
     }
 
     const id = randomUUID();
-    const item = { id, title, description, price: Number(price) }
+    const item = { id, title, description, price: Number(price) };
 
     const command = new TransactWriteCommand({
       TransactItems: [
@@ -61,9 +61,11 @@ export const handler = async function (
       headers: {
         'Content-Type': 'application/json',
         'Accept-Control-Allow-Origin': '*',
+        'Accept-Control-Allow-Headers': '*',
         'Access-Control-Allow-Methods': 'POST',
+        'Accept-Control-Allow-Credentials': true,
       },
-      body: JSON.stringify({ id, title, description, price, count }),
+      body: JSON.stringify({ ...item, count: Number(count) }),
     };
   } catch (dbError) {
     return { statusCode: 500, body: JSON.stringify(dbError) };

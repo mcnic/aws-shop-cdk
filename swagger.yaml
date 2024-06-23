@@ -4,7 +4,7 @@ info:
   description: Products Service API
   version: 0.0.1
 servers:
-  - url: https://6563hjfn25.execute-api.us-east-1.amazonaws.com/prod
+  - url: https://dz6hsqwdf4.execute-api.us-east-1.amazonaws.com/prod
     description: Production server
 paths:
   /products:
@@ -20,6 +20,28 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Product'
+    post:
+      summary: Create product
+      description: Create new product
+      requestBody:
+        description: Mandatory JSON
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+      responses:
+        '201':
+          description: Successfully created products from JSONPlaceholder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: wrong JSON
+          content:
+            string:
+              properties: wrong JSON
   /products/{uuid}:
     get:
       summary: Get product by ID
@@ -45,7 +67,6 @@ paths:
           required: true
           type: string
           format: string
-      tags: [Generic]
 components:
   schemas:
     Product:
@@ -64,3 +85,24 @@ components:
           type: number
           format: float
           example: 15
+        count:
+          type: number
+          format: integer
+          example: 1
+    CreateProduct:
+      type: object
+      properties:
+        description:
+          type: string
+          example: Short Product Description5
+        title:
+          type: string
+          example: ProductTest
+        price:
+          type: number
+          format: float
+          example: 15
+        count:
+          type: number
+          format: integer
+          example: 1          
