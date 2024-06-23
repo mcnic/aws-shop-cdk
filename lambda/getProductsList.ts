@@ -24,14 +24,14 @@ export const handler = async function (
   try {
     const products = await docClient.send(productsCmd);
     const stocks = await docClient.send(stocksCmd);
-    const stovksHashArr: Record<string, any> = {};
+    const stocksHashArr: Record<string, any> = {};
 
     if (stocks.Items) {
-      for (let s in stocks.Items) stovksHashArr[s] = stocks.Items[s];
+      for (let s of stocks.Items) stocksHashArr[s.product_id] = s.count;
     }
 
     const fullProducts =
-      products.Items?.map((e) => ({ ...e, count: stovksHashArr[e.id] || 0 })) ||
+      products.Items?.map((e) => ({ ...e, count: stocksHashArr[e.id] || 0 })) ||
       [];
 
     return {
