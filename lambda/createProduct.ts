@@ -60,10 +60,8 @@ export const handler = async function (
       statusCode: 201,
       headers: {
         'Content-Type': 'application/json',
-        'Accept-Control-Allow-Origin': '*',
-        'Accept-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST',
-        'Accept-Control-Allow-Credentials': true,
       },
       body: JSON.stringify({ ...item, count: Number(count) }),
     };
