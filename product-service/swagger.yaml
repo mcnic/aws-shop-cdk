@@ -4,7 +4,7 @@ info:
   description: Products Service API
   version: 0.0.1
 servers:
-  - url: https://dz6hsqwdf4.execute-api.us-east-1.amazonaws.com/prod
+  - url: https://o2jh3m7b57.execute-api.us-east-1.amazonaws.com/prod/products
     description: Production server
 paths:
   /products:
