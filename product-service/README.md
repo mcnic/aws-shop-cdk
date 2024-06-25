@@ -32,3 +32,8 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
   `aws dynamodb query --table-name MusicCollection \ --key-condition-expression "Artist = :v1 AND SongTitle = :v2" \ --expression-attribute-values file://expression-attributes.json`
 
 - seed data `npm run seed`
+
+## todo
+
+- tests is broken
+- in VSC tests are red
