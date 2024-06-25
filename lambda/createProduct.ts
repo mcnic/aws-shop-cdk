@@ -27,7 +27,14 @@ export const handler = async function (
   try {
     const { title, description, price, count } = JSON.parse(event.body ?? '');
 
-    if (!title || !description || price === undefined || count === undefined) {
+    if (
+      !title ||
+      typeof title !== 'string' ||
+      !description ||
+      typeof description !== 'string' ||
+      Number(price) < 0 ||
+      Number(count) < 0
+    ) {
       return {
         statusCode: 400,
         body: 'invalid request, you are missing mandatory parameters',
@@ -62,6 +69,7 @@ export const handler = async function (
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type',
       },
       body: JSON.stringify({ ...item, count: Number(count) }),
     };
