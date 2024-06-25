@@ -1,9 +1,8 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { AwsShopCdkStack } from '../lib/aws-shop-cdk-stack';
 import { APIGatewayEvent } from 'aws-lambda';
-import { handler as getProductsListHandler } from '../lambda/getProductsList';
-import { handler as getProductsByIdHandler } from '../lambda/getProductsById';
+import { ProductServiceStack } from '../src/stack';
+import { handler as getProductsByIdHandler } from '../src/handlers/getProductsById';
 
 const CORRECT_ID = '7567ec4b-b10c-48c5-9345-fc73348a80a1';
 const WRONG_ID = 'WRONG_ID';
@@ -55,7 +54,7 @@ const event: APIGatewayEvent = {
 };
 
 beforeAll(async () => {
-  appStack = new AwsShopCdkStack(new App(), 'MyTestStack');
+  appStack = new ProductServiceStack(new App(), 'MyTestStack');
   appTemplate = Template.fromStack(appStack);
 });
 

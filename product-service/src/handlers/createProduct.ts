@@ -5,6 +5,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { randomUUID } from 'crypto';
+import { createJsonResponse, createResponse } from '../helpers/responses';
 
 const client = new DynamoDBClient();
 const docClient = DynamoDBDocumentClient.from(client);
@@ -17,29 +18,9 @@ export const handler = async function (
     params: event.pathParameters,
   });
 
-  if (!event.body) {
-    return {
-      statusCode: 400,
-      body: 'invalid request, you are missing the parameter body',
-    };
-  }
 
   try {
     const { title, description, price, count } = JSON.parse(event.body ?? '');
-
-    if (
-      !title ||
-      typeof title !== 'string' ||
-      !description ||
-      typeof description !== 'string' ||
-      Number(price) < 0 ||
-      Number(count) < 0
-    ) {
-      return {
-        statusCode: 400,
-        body: 'invalid request, you are missing mandatory parameters',
-      };
-    }
 
     const id = randomUUID();
     const item = { id, title, description, price: Number(price) };
@@ -63,17 +44,12 @@ export const handler = async function (
 
     await docClient.send(command);
 
-    return {
-      statusCode: 201,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-      body: JSON.stringify({ ...item, count: Number(count) }),
-    };
+    return createJsonResponse(
+      { ...item, count: Number(count) },
+      201,
+      'OPTIONS,POST'
+    );
   } catch (dbError) {
-    return { statusCode: 500, body: JSON.stringify(dbError) };
+    return createJsonResponse(dbError, 500);
   }
 };

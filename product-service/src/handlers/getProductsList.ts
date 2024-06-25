@@ -1,6 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { createJsonResponse } from '../helpers/responses';
 
 const client = new DynamoDBClient();
 const docClient = DynamoDBDocumentClient.from(client);
@@ -34,16 +35,8 @@ export const handler = async function (
       products.Items?.map((e) => ({ ...e, count: stocksHashArr[e.id] || 0 })) ||
       [];
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET',
-      },
-      body: JSON.stringify(fullProducts),
-    };
+    return createJsonResponse(fullProducts);
   } catch (dbError) {
-    return { statusCode: 500, body: JSON.stringify(dbError) };
+    return createJsonResponse(dbError, 500);
   }
 };

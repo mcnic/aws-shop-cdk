@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/aws-shop-cdk.ts",
+  "app": "npx ts-node --prefer-ts-exts bin/product-service.ts",
   "watch": {
     "include": [
       "**"
