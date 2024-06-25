@@ -1,11 +1,6 @@
-*.js
-!jest.config.js
-*.d.ts
-node_modules
-
-#staging dir for lambda's
-dist
-
-# CDK asset staging directory
-.cdk.staging
 cdk.out
+dist
+node_modules
+docker
+.env*
+!.env.example
