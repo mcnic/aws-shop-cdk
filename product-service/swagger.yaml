@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: AWS-SHOP
+  description: Products Service API
+  version: 0.0.1
+servers:
+  - url: https://dz6hsqwdf4.execute-api.us-east-1.amazonaws.com/prod
+    description: Production server
+paths:
+  /products:
+    get:
+      summary: Get all products
+      description: List all products
+      responses:
+        '200':
+          description: Successfully fetched all products from JSONPlaceholder
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Create product
+      description: Create new product
+      requestBody:
+        description: Mandatory JSON
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+      responses:
+        '201':
+          description: Successfully created products from JSONPlaceholder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: wrong JSON
+          content:
+            string:
+              properties: wrong JSON
+  /products/{uuid}:
+    get:
+      summary: Get product by ID
+      description: One products data
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: wrong ID
+          content:
+            application/json:
+              schema:
+                type: string
+                properties: Product not found
+                example: Product not found
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          type: string
+          format: string
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        description:
+          type: string
+          example: Short Product Description4
+        id:
+          type: string
+          example: 7567ec4b-b10c-48c5-9345-fc73348a80a1
+        title:
+          type: string
+          example: ProductTest
+        price:
+          type: number
+          format: float
+          example: 15
+        count:
+          type: number
+          format: integer
+          example: 1
+    CreateProduct:
+      type: object
+      properties:
+        description:
+          type: string
+          example: Short Product Description5
+        title:
+          type: string
+          example: ProductTest
+        price:
+          type: number
+          format: float
+          example: 15
+        count:
+          type: number
+          format: integer
+          example: 1          
