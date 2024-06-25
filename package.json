@@ -5,13 +5,15 @@
     "aws-shop-cdk": "bin/aws-shop-cdk.js"
   },
   "scripts": {
-    "build": "node esbuild.config.mjs",
+    "build": "tsc",
+    "esbuild": "node esbuild.config.mjs",
     "watch": "tsc -w",
     "test": "jest",
     "swagger": "npx open-swagger-ui --open ./swagger.yaml",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:diff": "cdk diff",
+    "seed": "node ./lib/seed.mjs",
     "deploy": "npm run build && cdk synth && cdk deploy",
     "destroy": "cdk destroy"
   },
@@ -27,8 +29,10 @@
     "typescript": "~5.4.5"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.602.0",
     "@aws-sdk/client-lambda": "^3.596.0",
-    "aws-cdk-lib": "2.145.0",
+    "@aws-sdk/lib-dynamodb": "^3.602.0",
+    "aws-cdk-lib": "^2.145.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21",
     "swagger-ui-express": "^5.0.1"

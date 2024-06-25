@@ -10,13 +10,13 @@ export class Task03 extends Construct {
 
     const getProductsListLambda = new Function(this, 'getProductsListLambda', {
       runtime: Runtime.NODEJS_20_X,
-      code: Code.fromAsset('dist/lambda/getProductsList'),
+      code: Code.fromAsset('dist/lambda'),
       handler: 'getProductsList.handler',
     });
 
     const getProductsByIdLambda = new Function(this, 'getProductsByIdLambda', {
       runtime: Runtime.NODEJS_20_X,
-      code: Code.fromAsset('dist/lambda/getProductsById'),
+      code: Code.fromAsset('dist/lambda'),
       handler: 'getProductsById.handler',
     });
 
