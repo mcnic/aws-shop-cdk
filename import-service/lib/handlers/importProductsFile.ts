@@ -16,6 +16,10 @@ export const handler = async function (
 
   try {
     const { name } = event.queryStringParameters;
+    const ext = name.split('.').pop();
+
+    if (ext !== 'csv') return createResponse('Wrong file format', 400);
+
     const url = await getUrl(bucketName, `uploaded/${name}`);
 
     return createResponse(url);
