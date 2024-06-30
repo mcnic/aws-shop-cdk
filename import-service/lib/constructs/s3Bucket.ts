@@ -58,7 +58,7 @@ export class S3Bucket extends Construct {
     });
   }
 
-  public addActionsPolicy(
+  public addPermisions(
     handler: IFunction,
     actions: S3Actions[],
     path: string
