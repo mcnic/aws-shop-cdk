@@ -1,14 +1,11 @@
 import { APIGatewayProxyResult, S3Event } from 'aws-lambda';
 import { createJsonResponse, createResponse } from '../helpers/responses';
 import csv = require('csv-parser');
-import { Readable } from 'node:stream';
-import { S3 } from '@aws-sdk/client-s3';
-import { queryStringParameters } from '../types';
-
-const s3 = new S3();
+import {  S3Client } from '@aws-sdk/client-s3';
+import { getBucketFileStream } from '../helpers/bucket';
 
 export const handler = async function (
-  event: S3Event & queryStringParameters
+  event: S3Event
 ): Promise<APIGatewayProxyResult> {
   const bucketName = process.env.BUCKET_NAME ?? '';
   const key = decodeURIComponent(
@@ -19,12 +16,12 @@ export const handler = async function (
     key,
   });
 
-  const s3object = await s3.getObject({ Bucket: bucketName, Key: key });
+  const readableStream = await getBucketFileStream(bucketName, key);
   const parser = csv();
   const results: any[] = [];
 
   return new Promise(() =>
-    (s3object.Body as Readable)
+    readableStream
       .pipe(parser)
       .on('data', (data) => results.push(data))
       .on('end', () => {

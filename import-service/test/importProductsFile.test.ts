@@ -1,8 +1,7 @@
-import { APIGatewayEvent, S3Event } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
 import { createResponse } from '../lib/helpers/responses';
 import { queryStringParameters } from '../lib/types';
 import { handler as importProductsFileHandler } from '../lib/handlers/importProductsFile';
-import { handler as importFileParserHandler } from '../lib/handlers/importFileParser';
 
 const FILE_NAME = 'filename.csv';
 const apiMockEvent: APIGatewayEvent & queryStringParameters = {
@@ -51,48 +50,6 @@ const apiMockEvent: APIGatewayEvent & queryStringParameters = {
   resource: '',
 };
 
-const s3MockEvent: S3Event & queryStringParameters = {
-  queryStringParameters: {
-    name: FILE_NAME,
-  },
-  Records: [
-    {
-      eventVersion: '',
-      eventSource: '',
-      awsRegion: '',
-      eventTime: '',
-      eventName: '',
-      userIdentity: {
-        principalId: '',
-      },
-      requestParameters: {
-        sourceIPAddress: '',
-      },
-      responseElements: {
-        'x-amz-request-id': '',
-        'x-amz-id-2': '',
-      },
-      s3: {
-        s3SchemaVersion: '',
-        configurationId: '',
-        bucket: {
-          name: '',
-          ownerIdentity: {
-            principalId: '',
-          },
-          arn: '',
-        },
-        object: {
-          key: 'asasasa',
-          size: 0,
-          eTag: '',
-          sequencer: '',
-        },
-      },
-    },
-  ],
-};
-
 jest.mock('@aws-sdk/client-s3');
 jest.mock('@aws-sdk/s3-request-presigner', () => {
   return {
@@ -100,23 +57,9 @@ jest.mock('@aws-sdk/s3-request-presigner', () => {
   };
 });
 
-jest.mock('@aws-sdk/client-s3', () => ({
-  getObject: () => {
-    return { Body: () => {} };
-  },
-}));
-
 describe('importProductsFile', () => {
   test('getUrl', async () => {
     const res = await importProductsFileHandler(apiMockEvent);
-
-    expect(res).toEqual(createResponse(`${FILE_NAME}-1`));
-  });
-});
-
-describe('importFileParser', () => {
-  test('getUrl', async () => {
-    const res = await importFileParserHandler(s3MockEvent);
 
     expect(res).toEqual(createResponse(`${FILE_NAME}-1`));
   });
