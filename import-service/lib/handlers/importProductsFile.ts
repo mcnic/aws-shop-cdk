@@ -1,8 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { createJsonResponse, createResponse } from '../helpers/responses';
 import { getUrl } from '../helpers/bucket';
-
-type queryStringParameters = { queryStringParameters: { name: string } };
+import {queryStringParameters} from '../types'
 
 export const handler = async function (
   event: APIGatewayProxyEvent & queryStringParameters

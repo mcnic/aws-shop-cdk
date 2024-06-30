@@ -3,8 +3,8 @@ import { createJsonResponse, createResponse } from '../helpers/responses';
 import csv = require('csv-parser');
 import { Readable } from 'node:stream';
 import { S3 } from '@aws-sdk/client-s3';
+import { queryStringParameters } from '../types';
 
-type queryStringParameters = { queryStringParameters: { name: string } };
 const s3 = new S3();
 
 export const handler = async function (
