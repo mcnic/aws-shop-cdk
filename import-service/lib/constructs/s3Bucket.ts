@@ -6,10 +6,13 @@ import {
   BlockPublicAccess,
   Bucket,
   BucketEncryption,
+  EventType,
   HttpMethods,
+  IBucketNotificationDestination,
 } from 'aws-cdk-lib/aws-s3';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
 
 export const enum S3Actions {
   PUT = 's3:PutObject',
@@ -58,11 +61,7 @@ export class S3Bucket extends Construct {
     });
   }
 
-  public addPermisions(
-    handler: IFunction,
-    actions: S3Actions[],
-    path: string
-  ) {
+  public addPermisions(handler: IFunction, actions: S3Actions[], path: string) {
     handler.addToRolePolicy(
       new PolicyStatement({
         actions,
@@ -70,6 +69,12 @@ export class S3Bucket extends Construct {
         effect: Effect.ALLOW,
       })
     );
+  }
+
+  public addEvent(event: EventType, handler: IFunction, prefix: string) {
+    this.bucket.addEventNotification(event, new LambdaDestination(handler), {
+      prefix,
+    });
   }
 
   public async listObjects() {
