@@ -68,6 +68,11 @@ export class ImportServiceStack extends cdk.Stack {
       [S3Actions.PUT],
       config.parsedPath
     );
+    uploadBucketConstruct.addPermisions(
+      importFileParserHandler,
+      [S3Actions.DELETE],
+      config.uploadPath
+    );
 
     // add event to start parsing new file
     uploadBucketConstruct.addEvent(

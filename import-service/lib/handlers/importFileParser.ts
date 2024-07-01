@@ -32,7 +32,7 @@ export const handler = async function (
       `${config.uploadPath}/`,
       `${config.parsedPath}/`
     );
-    moveFileBetweenBucketFolders(name, key, destKey);
+    await moveFileBetweenBucketFolders(name, key, destKey);
   }
 
   return createResponse('ok');
