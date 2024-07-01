@@ -5,9 +5,9 @@ import { createReadStream, ReadStream } from 'fs';
 import { join as pathJoin } from 'node:path';
 import * as bucketApi from '../lib/helpers/bucket';
 import { Readable } from 'node:stream';
-import { S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
-// import { sdkStreamMixin } from '@smithy/util-stream';
+import { sdkStreamMixin } from '@smithy/util-stream';
 
 const s3MockEvent = {
   Records: [
@@ -30,14 +30,15 @@ describe('importFileParser', () => {
   beforeAll(() => {
     const mockFile = pathJoin(process.cwd(), 'test/mock.csv');
     // bellow are 3 mock variants, working all
-    jest
-      .spyOn(bucketApi, 'getBucketFileStream')
-      .mockReturnValue(Promise.resolve(createReadStream(mockFile) as Readable));
+    
+    // jest
+    //   .spyOn(bucketApi, 'getBucketFileStream')
+    //   .mockReturnValue(Promise.resolve(createReadStream(mockFile) as Readable));
     // .mockImplementation((_bucket: string, _key: string) =>
     //   Promise.resolve(createReadStream(mockFile) as Readable)
     // );
 
-    // s3Mock.on(GetObjectCommand).resolves({ Body: sdkStreamMixin(createReadStream(mockFile)) });
+    s3Mock.on(GetObjectCommand).resolves({ Body: sdkStreamMixin(createReadStream(mockFile)) });
   });
 
   test('parse csv file', async () => {

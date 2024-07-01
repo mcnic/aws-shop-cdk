@@ -18,7 +18,7 @@ export const getUrl = async (bucket: string, key: string): Promise<string> => {
   return await getSignedUrl(client, command, { expiresIn: 120 });
 };
 
-export const getBucketFileStream = async (
+export const getReadableStreamFromBucketFile = async (
   bucket: string,
   key: string
 ): Promise<Readable> => {
