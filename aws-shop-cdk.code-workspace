@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "import-service",
+			"path": "import-service"
+		},
+		{
+			"name": "product-service",
+			"path": "product-service"
+		}
+	],
+	"settings": {
+		"jest.disabledWorkspaceFolders": [
+			"aws-shop-cdk"
+		]
+	}
+}

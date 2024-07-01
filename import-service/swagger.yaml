@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: AWS-SHOP
+  description: Products Service API
+  version: 0.0.1
+servers:
+  - url: https://i6gsu0m0sg.execute-api.us-east-1.amazonaws.com/prod
+    description: Imports server
+paths:
+  /import:
+    get:
+      summary: Get presigned utl
+      description: Get presigned utl
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema:
+            type: string
+            example: "file.csv"
+          description: csv file name
+      responses:
+        '200':
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: https://import-service-01.s3.us-east-1.amazonaws.com/uploaded/flare.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZMQGD5GDNWUINLCD%2F20240701%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240701T023908Z&X-Amz-Expires=120&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEJv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQDhlU0qy5fj1qeiIwjfMeiB33ZFesoFF9T3wQ%2FHqP442AIgEuSANwy9rFSn%2FTtsMTXh5fiSYIcOsPczQ8WuCtb2iKgq0wMIVBAAGgw2NDUzMzE2NzU1MjYiDHnYWUnYdcq%2B5z4WuyqwA%2BdqWA7OqnDyGDZRbABpMkB8hUqcbLt5R2mNThLErgIuQR8JFyyN9t6EqHQ8kmM7U2czUgneQKz5%2F5sfriN0r7QjeB63qXj91ycADvNK9FxEGPGJBsiB0d8fmbYUR2lB%2Bn3cjncyVhtoKFGkg%2FWspQJP6F8TGh9cZ5oP65m9R7tv2bsD4LY6es7tRdbaNf2R4ukR5ShBnJCSskTYLjEgjwF5LCQfatwJmNa3WbDPpUdADxWWW%2By7BYeJDaMaMTAA%2FGcnUuaJz2Xu0%2BFekdjjUx3jZZJcFwj4ytPAhCWmG%2BD2pnXIdWfRszzfGQyjONmI6nH9Jzv1L1e837OAPXhpwjfwZikg9e8I2FBHITVMXAxGtePKZAIOFNA7xiXBewhwQA4uqQlOz8r13YwQl%2BJkajAPqjSwBnIYTZibkP%2FnvNpDn0d%2F2moy1M5FgEhc787EvO62lR2%2BVEOg8bVrR13IZfc7HItHTGUVQSZhgKbjYyD5KgeM3u5YcDWKkVPro7%2BBFkkklhO1nTnUANxb4YIdMoKYJMZcr5pCO4xLjCMExRGma3yVan00mLpMbmna3dkNfjDLrYi0BjqeAXASryXt8Wb90iBWSicOnYsher0tH6mwnZWuSTW5gV7haTeNj3QhOBMk4jUFM64EbYZFh7DzwPNhYhGrJfK8z0yPZ22mhEfK%2FkQ0F3b3afncn8llIbATkL7S2LKFxaxWneJixj9ZmE%2F3bXT6Chs1G8j4R3iKN0GVpA5KT4lou%2FUYjYWviqzyojKG9aMOPqPl5KZzXl4iMvZNBk66FuYB&X-Amz-Signature=db85c6bdbdc2864b098bbbb5bd48239e577a1c8ea36dc6d769ecaf7e25a67eff&X-Amz-SignedHeaders=host&x-id=PutObject
+        '400':
+          description: wrong filename
+          content:
+            string:
+              properties: wrong filename       
+        "500":
+          d$ref: "#/components/responses/InternalError"    
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        message:
+          type: string
+      example:
+        statusCode: 500
+        message: "Unknown processing error"
+  responses:
+    InternalError:
+      description: Unknown server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+
