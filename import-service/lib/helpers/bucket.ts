@@ -27,7 +27,7 @@ export const getBucketFileStream = async (
     Body: Readable;
   };
 
-  if (response.$metadata.httpStatusCode !== 200) {
+  if (!response.Body) {
     throw new Error(key);
   }
 
