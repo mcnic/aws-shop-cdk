@@ -1,8 +1,12 @@
 import { APIGatewayProxyResult, S3CreateEvent } from 'aws-lambda';
-import { createJsonResponse, createResponse } from '../helpers/responses';
+import { createResponse } from '../helpers/responses';
 import csv = require('csv-parser');
-import { getReadableStreamFromBucketFile } from '../helpers/bucket';
+import {
+  getReadableStreamFromBucketFile,
+  moveFileBetweenBucketFolders,
+} from '../helpers/bucket';
 import { pipeline } from 'stream/promises';
+import { config } from '../config';
 
 export const handler = async function (
   event: S3CreateEvent
@@ -23,6 +27,12 @@ export const handler = async function (
       });
 
     await pipeline(readableStream, parseStream);
+
+    const destKey = key.replace(
+      `${config.uploadPath}/`,
+      `${config.parsedPath}/`
+    );
+    moveFileBetweenBucketFolders(name, key, destKey);
   }
 
   return createResponse('ok');
