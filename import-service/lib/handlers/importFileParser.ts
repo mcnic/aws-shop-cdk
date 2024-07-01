@@ -1,7 +1,6 @@
 import { APIGatewayProxyResult, S3Event } from 'aws-lambda';
 import { createJsonResponse, createResponse } from '../helpers/responses';
 import csv = require('csv-parser');
-import {  S3Client } from '@aws-sdk/client-s3';
 import { getBucketFileStream } from '../helpers/bucket';
 
 export const handler = async function (

@@ -1,16 +1,12 @@
 import { S3Event } from 'aws-lambda';
 import { createResponse } from '../lib/helpers/responses';
-import { queryStringParameters } from '../lib/types';
 import { handler as importFileParserHandler } from '../lib/handlers/importFileParser';
-// import { getBucketFileStream } from '../lib/helpers/bucket';
 import { createReadStream } from 'fs';
+import { join as pathJoin } from 'node:path';
+import * as bucketApi from '../lib/helpers/bucket';
+import { Readable } from 'node:stream';
 
-const FILE_NAME = 'filename.csv';
-
-const s3MockEvent: S3Event & queryStringParameters = {
-  queryStringParameters: {
-    name: FILE_NAME,
-  },
+const s3MockEvent: S3Event = {
   Records: [
     {
       eventVersion: '',
@@ -39,7 +35,7 @@ const s3MockEvent: S3Event & queryStringParameters = {
           arn: '',
         },
         object: {
-          key: 'asasasa',
+          key: 'file.csv',
           size: 0,
           eTag: '',
           sequencer: '',
@@ -49,42 +45,20 @@ const s3MockEvent: S3Event & queryStringParameters = {
   ],
 };
 
-// jest.mock('@aws-sdk/client-s3');
-
-// jest.mock('@aws-sdk/client-s3', () => ({
-//   constructor: ()=>{},
-//   getObject: () => {
-//     return { Body: () => {} };
-//   },
-// }));
-
-// jest.mock('./getBucketFileStream', () => {
-//   return createReadStream('./mock.csv');
-// });
-
-jest.mock('../lib/helpers/bucket', () => {
-  const originalModule = jest.requireActual<
-    typeof import('../lib/helpers/bucket')
-  >('../lib/helpers/bucket');
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    getBucketFileStream: () => {
-      return createReadStream('./mock.csv');
-    },
-  };
-});
-
 describe('importFileParser', () => {
-  afterAll(() => {
-    jest.unmock('../lib/helpers/bucket');
+  beforeEach(() => {
+    const mockFile = pathJoin(process.cwd(), 'test/mock.csv');
+    jest
+      .spyOn(bucketApi, 'getBucketFileStream')
+      .mockReturnValue(Promise.resolve(createReadStream(mockFile) as Readable))
+      // .mockImplementation((_bucket: string, _key: string) =>
+      //   Promise.resolve(createReadStream(mockFile) as Readable)
+      // );
   });
 
   test('parse csv file', async () => {
     const res = await importFileParserHandler(s3MockEvent);
     console.log('=== importFileParser res', res);
-
 
     expect(res).toEqual(createResponse('ok'));
   });
