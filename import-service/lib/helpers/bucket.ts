@@ -1,4 +1,6 @@
 import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
   GetObjectCommand,
   GetObjectCommandOutput,
   PutObjectCommand,
@@ -32,4 +34,20 @@ export const getReadableStreamFromBucketFile = async (
   }
 
   return response.Body;
+};
+
+export const moveFileBetweenBucketFolders = async (
+  bucket: string,
+  srcPath: string,
+  destPath: string
+) => {
+  await client.send(
+    new CopyObjectCommand({
+      CopySource: `/${bucket}/${srcPath}`,
+      Bucket: bucket,
+      Key: destPath,
+    })
+  );
+
+  await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: srcPath }));
 };
