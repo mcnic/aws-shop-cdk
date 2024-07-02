@@ -20,5 +20,5 @@
     "typeRoots": ["./node_modules/@types"],
     "outDir": "dist"
   },
-  "include": ["lib/handlers"]
+  "include": ["lib/handlers", "test/*.ts"]
 }
