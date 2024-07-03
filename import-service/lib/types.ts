@@ -14,6 +14,12 @@ export const ProductSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
-  price: z.number().min(0),
-  count: z.number().min(0),
+  price: z.preprocess(
+    (a) => parseInt(z.string().parse(a), 10),
+    z.number().min(0)
+  ),
+  count: z.preprocess(
+    (a) => parseInt(z.string().parse(a), 10),
+    z.number().min(0)
+  ),
 });
