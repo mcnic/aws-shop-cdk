@@ -5,6 +5,7 @@ import { S3Actions, S3Bucket } from './constructs/s3Bucket';
 import { config } from './config';
 import { Handlers } from './constructs/handlers';
 import { ImportsAPI } from './constructs/api';
+import { SQS } from './constructs/sqs';
 
 /*
   Tutorial: Using an Amazon S3 trigger to invoke a Lambda function: 
@@ -36,12 +37,16 @@ export class ImportServiceStack extends cdk.Stack {
       }
     );
 
+    // *** queue ***
+    const sqsCounstruct = new SQS(this, 'ImportQueue', {});
+
     // create lambda handlerts
     const { importProductsFileHandler, importFileParserHandler } = new Handlers(
       this,
       'importProducts',
       {
         bucketName: config.bucketName,
+        queueUrl: sqsCounstruct.queue.queueUrl,
       }
     );
 
@@ -73,6 +78,7 @@ export class ImportServiceStack extends cdk.Stack {
       [S3Actions.DELETE],
       config.uploadPath
     );
+    sqsCounstruct.queue.grantSendMessages(importFileParserHandler);
 
     // add event to start parsing new file
     uploadBucketConstruct.addEvent(

@@ -5,6 +5,7 @@ import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 
 type HandlersProps = {
   bucketName: string;
+  queueUrl: string;
 };
 
 export class Handlers extends Construct {
@@ -32,7 +33,10 @@ export class Handlers extends Construct {
         runtime: Runtime.NODEJS_20_X,
         code: Code.fromAsset('dist/handlers'),
         handler: 'importFileParser.handler',
-        environment: { BUCKET_NAME: props.bucketName },
+        environment: {
+          BUCKET_NAME: props.bucketName,
+          QUEUE_URL: props.queueUrl,
+        },
       }
     );
   }
