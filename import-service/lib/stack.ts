@@ -6,6 +6,8 @@ import { config } from './config';
 import { Handlers } from './constructs/handlers';
 import { ImportsAPI } from './constructs/api';
 import { SQS } from './constructs/sqs';
+import { Duration } from 'aws-cdk-lib';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 /*
   Tutorial: Using an Amazon S3 trigger to invoke a Lambda function: 
@@ -38,20 +40,19 @@ export class ImportServiceStack extends cdk.Stack {
     );
 
     // *** queue ***
-    const sqsCounstruct = new SQS(this, 'ImportQueue', {});
+    const { queue } = new SQS(this, 'CatalogItemsQueue', {});
 
     // create lambda handlerts
-    const { importProductsFileHandler, importFileParserHandler } = new Handlers(
-      this,
-      'importProducts',
-      {
-        bucketName: config.bucketName,
-        queueUrl: sqsCounstruct.queue.queueUrl,
-      }
-    );
+    const {
+      importProductsFileHandler,
+      importFileParserHandler,
+      catalogBatchProcess,
+    } = new Handlers(this, 'importProducts', {
+      bucketName: config.bucketName,
+      queueUrl: queue.queueUrl,
+    });
 
-    // *** Import file ***
-    // grant permissions for importProductsFileHandler
+    // Import file: grant permissions for importProductsFileHandler
     uploadBucketConstruct.addPermisions(
       importProductsFileHandler,
       [S3Actions.PUT],
@@ -61,8 +62,7 @@ export class ImportServiceStack extends cdk.Stack {
     // add API gateways
     new ImportsAPI(this, 'ImportAPI', { handler: importProductsFileHandler });
 
-    // *** Parse file ***
-    // grant permissions for importFileParserHandler
+    // Parse file: grant permissions for importFileParserHandler
     uploadBucketConstruct.addPermisions(
       importFileParserHandler,
       [S3Actions.GET],
@@ -78,7 +78,7 @@ export class ImportServiceStack extends cdk.Stack {
       [S3Actions.DELETE],
       config.uploadPath
     );
-    sqsCounstruct.queue.grantSendMessages(importFileParserHandler);
+    queue.grantSendMessages(importFileParserHandler);
 
     // add event to start parsing new file
     uploadBucketConstruct.addEvent(
@@ -86,5 +86,15 @@ export class ImportServiceStack extends cdk.Stack {
       importFileParserHandler,
       config.uploadPath
     );
+
+    // Consuming an SQS togetting messages from queue 
+    catalogBatchProcess.addEventSource(
+      new SqsEventSource(queue, {
+        batchSize: 1,
+        maxBatchingWindow: Duration.minutes(5),
+        reportBatchItemFailures: true, // default to false
+      })
+    );
+    queue.grantConsumeMessages(catalogBatchProcess);
   }
 }

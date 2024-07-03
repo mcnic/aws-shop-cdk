@@ -23,11 +23,7 @@ export const handler = async function (
     try {
       const readableStream = await getReadableStreamFromBucketFile(name, key);
       const results: any[] = [];
-      const parseStream = csv()
-        .on('data', (data) => results.push(data))
-        .on('end', () => {
-          console.log(`${key} results`, results);
-        });
+      const parseStream = csv().on('data', (data) => results.push(data));
 
       await pipeline(readableStream, parseStream);
 
