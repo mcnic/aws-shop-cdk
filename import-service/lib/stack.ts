@@ -77,7 +77,7 @@ export class ImportServiceStack extends cdk.Stack {
     // Consuming an SQS to getting messages from queue
     catalogBatchProcess.addEventSource(
       new SqsEventSource(queue, {
-        batchSize: 1,
+        batchSize: 5,
         maxBatchingWindow: Duration.minutes(5),
         reportBatchItemFailures: true,
       })
