@@ -10,8 +10,9 @@ export type Product = {
   count: number;
 };
 
-export const ProductSchema = z.object({
-  id: z.string(),
+export type NewProduct = Omit<Product, 'id'>;
+
+export const NewProductSchema = z.object({
   title: z.string(),
   description: z.string(),
   price: z.preprocess(

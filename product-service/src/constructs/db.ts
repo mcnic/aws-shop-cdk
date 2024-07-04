@@ -9,13 +9,13 @@ import {
 import { config } from '../config';
 
 export class DB extends Construct {
-  public readonly productsTable: Table
-  public readonly stocksTable: Table
+  public readonly productsTable: Table;
+  public readonly stocksTable: Table;
 
   constructor(parent: Stack, name: string) {
     super(parent, name);
 
-    this.productsTable = new Table(this, 'Products', {
+    this.productsTable = new Table(this, config.PRODUCTS_TABLE_NAME, {
       tableName: config.PRODUCTS_TABLE_NAME,
       partitionKey: {
         name: 'id',
@@ -25,7 +25,7 @@ export class DB extends Construct {
       encryption: TableEncryption.AWS_MANAGED,
     });
 
-    this.stocksTable = new Table(this, 'Stocks', {
+    this.stocksTable = new Table(this, config.STOCKS_TABLE_NAME, {
       tableName: config.STOCKS_TABLE_NAME,
       partitionKey: {
         name: 'product_id',
@@ -34,6 +34,5 @@ export class DB extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
       encryption: TableEncryption.AWS_MANAGED,
     });
-
   }
 }
