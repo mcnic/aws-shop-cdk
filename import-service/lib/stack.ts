@@ -9,6 +9,7 @@ import { SQS } from './constructs/sqs';
 import { Duration } from 'aws-cdk-lib';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { grantDBPermissionForHandler } from './helpers/db';
+import { SNS } from './constructs/sns';
 
 export class ImportServiceStack extends cdk.Stack {
   public readonly bucket: Bucket;
@@ -28,6 +29,10 @@ export class ImportServiceStack extends cdk.Stack {
 
     // Create SQS queue
     const { queue } = new SQS(this, 'CatalogItemsQueue', {});
+
+    // Create SNS for email messaging
+    const snsConstruct = new SNS(this, 'CatalogItemsSNS');
+    snsConstruct.createTopicAndSubscribe(config.emails.importSuccess);
 
     // Create lambda handlerts
     const {

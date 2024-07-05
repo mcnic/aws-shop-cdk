@@ -19,15 +19,14 @@ export const grantDBPermissionForHandler = (
 ) => {
   const productTable = Table.fromTableName(
     scope,
-    config.PRODUCTS_TABLE_NAME,
-    config.PRODUCTS_TABLE_NAME
+    config.productTableName,
+    config.productTableName
   );
   const stockTable = Table.fromTableName(
     scope,
-    config.STOCKS_TABLE_NAME,
-    config.STOCKS_TABLE_NAME
+    config.stockTableName,
+    config.stockTableName
   );
-  console.log({ productTable, stockTable });
 
   stockTable.grantWriteData(handler);
   productTable.grantWriteData(handler);
@@ -45,13 +44,13 @@ export const addNewProductsToDB = async function (products: NewProduct[]) {
       TransactItems: [
         {
           Put: {
-            TableName: config.PRODUCTS_TABLE_NAME,
+            TableName: config.productTableName,
             Item: item,
           },
         },
         {
           Put: {
-            TableName: config.STOCKS_TABLE_NAME,
+            TableName: config.stockTableName,
             Item: { product_id: id, count: product.count },
           },
         },
