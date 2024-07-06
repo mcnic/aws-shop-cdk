@@ -32,7 +32,6 @@ export class ImportServiceStack extends cdk.Stack {
 
     // Create SNS for email messaging
     const snsConstruct = new SNS(this, 'CatalogItemsSNS');
-    snsConstruct.createTopicAndSubscribe(config.emails.importSuccess);
 
     // Create lambda handlerts
     const {
@@ -42,6 +41,7 @@ export class ImportServiceStack extends cdk.Stack {
     } = new Handlers(this, 'importProducts', {
       bucketName: config.bucketName,
       queueUrl: queue.queueUrl,
+      snsArn: snsConstruct.topic.topicArn,
     });
 
     // Import file: grant permissions for importProductsFileHandler
@@ -71,6 +71,7 @@ export class ImportServiceStack extends cdk.Stack {
       config.uploadPath
     );
     queue.grantSendMessages(importFileParserHandler);
+    snsConstruct.addPermisions(importFileParserHandler);
 
     // Add event to start parsing new file
     uploadBucketConstruct.addEvent(

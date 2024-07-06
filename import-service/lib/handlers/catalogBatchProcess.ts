@@ -1,6 +1,7 @@
 import { SQSEvent, SQSHandler } from 'aws-lambda';
 import { Product, NewProductSchema, NewProduct } from '../types';
 import { addNewProductsToDB } from '../helpers/db';
+import { publishMessages } from '../helpers/sns';
 
 export const handler: SQSHandler = async function (event: SQSEvent) {
   const products: NewProduct[] = [];
@@ -18,4 +19,10 @@ export const handler: SQSHandler = async function (event: SQSEvent) {
   }
 
   await addNewProductsToDB(products);
+
+  if (!process.env.SNS_ARN) {
+    throw new Error('wrong SNS_ARN');
+  }
+
+  await publishMessages(process.env.SNS_ARN, 'success');
 };

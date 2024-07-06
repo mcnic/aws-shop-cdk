@@ -6,6 +6,7 @@ import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 type HandlersProps = {
   bucketName: string;
   queueUrl: string;
+  snsArn: string
 };
 
 export class Handlers extends Construct {
@@ -45,6 +46,9 @@ export class Handlers extends Construct {
       runtime: Runtime.NODEJS_20_X,
       code: Code.fromAsset('dist/handlers'),
       handler: 'catalogBatchProcess.handler',
+      environment: {
+        SNS_ARN: props.snsArn,
+      },
     });
   }
 }

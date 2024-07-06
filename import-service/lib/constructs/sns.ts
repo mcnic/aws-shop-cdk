@@ -1,68 +1,56 @@
 #!/usr/bin/env node
 import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {
-  CreateTopicCommand,
-  SNSClient,
-  SubscribeCommand,
-} from '@aws-sdk/client-sns';
+import { SNSClient } from '@aws-sdk/client-sns';
 import { config } from '../config';
+import {
+  Subscription,
+  SubscriptionProtocol,
+  Topic,
+  TopicPolicy,
+} from 'aws-cdk-lib/aws-sns';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import {
+  AnyPrincipal,
+  PolicyDocument,
+  PolicyStatement,
+} from 'aws-cdk-lib/aws-iam';
 
 const snsClient = new SNSClient({});
 
 export class SNS extends Construct {
-  public topicArn: string;
+  public topic: Topic;
 
   constructor(parent: Stack, name: string) {
     super(parent, name);
 
-    snsClient.send(new CreateTopicCommand({ Name: config.topicName }));
+    this.topic = new Topic(parent, config.topicName, {
+      topicName: config.topicName,
+    });
+    new Subscription(this, 'Subscription', {
+      topic: this.topic,
+      endpoint: config.emails.importSuccess,
+      protocol: SubscriptionProtocol.EMAIL,
+      // subscriptionRoleArn: 'SAMPLE_ARN', //role with permissions to send messages
+      // filterPolicy: [attribute: string]: SubscriptionFilter;
+    });
   }
 
-  protected async createTopic() {
-    const snsClient = new SNSClient({});
-    const response = await snsClient.send(
-      new CreateTopicCommand({ Name: config.topicName })
-    );
-    console.log('createTopic response', response);
+  public addPermisions(handler: IFunction) {
+    const policyDocument = new PolicyDocument({
+      assignSids: true,
+      statements: [
+        new PolicyStatement({
+          actions: ['sns:Publish'],
+          principals: [new AnyPrincipal()],
+          resources: [this.topic.topicArn],
+        }),
+      ],
+    });
 
-    if (response.TopicArn) {
-      this.topicArn = response.TopicArn;
-    }
-  }
-
-  protected async subscribeToEmail(
-    emailAddress: string,
-    attributes?: Record<string, string>
-  ) {
-    if (!emailAddress) {
-      throw new Error('wrong emailAddress for subscribe');
-    }
-
-    if (!this.topicArn) {
-      throw new Error('wrong topicArn for subscribe');
-    }
-
-    const response = await snsClient.send(
-      new SubscribeCommand({
-        Protocol: 'email',
-        TopicArn: this.topicArn,
-        Endpoint: emailAddress,
-        Attributes: attributes,
-      })
-    );
-    console.log('SNS subscribed to Email', emailAddress, response);
-  }
-
-  async createTopicAndSubscribe(emailAddress: string) {
-    await this.createTopic();
-
-    await this.subscribeToEmail(emailAddress, {
-      // // This subscription will only receive messages with the 'event' attribute set to 'order_placed'.
-      // FilterPolicyScope: 'MessageAttributes',
-      // FilterPolicy: JSON.stringify({
-      //   event: ['order_placed'],
-      // }),
+    const topicPolicy = new TopicPolicy(this, 'Policy', {
+      topics: [this.topic],
+      policyDocument,
     });
   }
 }
