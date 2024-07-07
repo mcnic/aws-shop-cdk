@@ -1,0 +1,1 @@
+export type queryStringParameters = { queryStringParameters: { name: string } };
