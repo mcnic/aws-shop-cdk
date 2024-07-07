@@ -10,7 +10,7 @@ export const config = {
   topicName: 'createProductTopic',
   emails: {
     importSuccess: process.env.CDK_EMAIL_IMPORT_SUCCESS ?? '',
-    importError: process.env.CDK_EMAIL_IMPORT_FAIL ?? '',
+    imporLongQueue: process.env.CDK_EMAIL_IMPORT_OVERLENGTH ?? '',
   },
   productTableName: 'Products',
   stockTableName: 'Stocks',

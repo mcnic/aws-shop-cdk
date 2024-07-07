@@ -5,6 +5,7 @@ import { SNSClient } from '@aws-sdk/client-sns';
 import { config } from '../config';
 import {
   Subscription,
+  SubscriptionFilter,
   SubscriptionProtocol,
   Topic,
   TopicPolicy,
@@ -27,13 +28,24 @@ export class SNS extends Construct {
     this.topic = new Topic(parent, config.topicName, {
       topicName: config.topicName,
     });
+
     new Subscription(this, 'Subscription', {
       topic: this.topic,
       endpoint: config.emails.importSuccess,
       protocol: SubscriptionProtocol.EMAIL,
-      // subscriptionRoleArn: 'SAMPLE_ARN', //role with permissions to send messages
-      // filterPolicy: [attribute: string]: SubscriptionFilter;
     });
+
+    new Subscription(this, 'SubscriptionLongQueue', {
+      topic: this.topic,
+      endpoint: config.emails.imporLongQueue,
+      protocol: SubscriptionProtocol.EMAIL,
+      filterPolicy: {
+        totalCount: SubscriptionFilter.numericFilter({
+          greaterThanOrEqualTo: 5,
+        }),
+      }
+    });
+
   }
 
   public addPermisions(handler: IFunction) {
