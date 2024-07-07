@@ -33,7 +33,7 @@ export const grantDBPermissionForHandler = (
 };
 
 export const addNewProductsToDB = async function (products: NewProduct[]) {
-  // console.log('addNewProductsToDB', products);
+  console.log('addNewProductsToDB', products);
 
   for (const product of products) {
     const id = randomUUID();

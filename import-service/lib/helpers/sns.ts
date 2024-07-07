@@ -9,6 +9,6 @@ export const publishMessages = async (topicArn: string, message: string) => {
       Message: message,
     })
   );
-  console.log('message published');
+  console.log('message published:', message);
   
 };
