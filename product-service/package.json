@@ -12,7 +12,7 @@
     "cdk": "cdk",
     "swagger": "npx open-swagger-ui --open ./swagger.yaml",
     "seed": "ts-node src/scripts/seed.ts",
-    "deploy": "npm run build && cdk deploy && npm run seed",
+    "deploy": "npm run build && cdk deploy",
     "destroy": "cdk destroy"
   },
   "devDependencies": {
@@ -35,5 +35,10 @@
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",
     "typescript": "~5.4.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.614.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
   }
 }

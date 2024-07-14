@@ -26,18 +26,18 @@ export class SNS extends Construct {
     super(parent, name);
 
     this.topic = new Topic(parent, config.topicName, {
-      topicName: config.topicName,
+      topicName: config.topicName
     });
 
     new Subscription(this, 'Subscription', {
       topic: this.topic,
-      endpoint: config.emails.importSuccess,
+      endpoint: config.emailImportSuccess,
       protocol: SubscriptionProtocol.EMAIL,
     });
 
     new Subscription(this, 'SubscriptionLongQueue', {
       topic: this.topic,
-      endpoint: config.emails.imporLongQueue,
+      endpoint: config.emailImporLongQueue,
       protocol: SubscriptionProtocol.EMAIL,
       filterPolicy: {
         totalCount: SubscriptionFilter.numericFilter({
@@ -48,7 +48,7 @@ export class SNS extends Construct {
 
   }
 
-  public addPermisions(handler: IFunction) {
+  public addPermisions() {
     const policyDocument = new PolicyDocument({
       assignSids: true,
       statements: [

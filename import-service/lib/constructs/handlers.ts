@@ -6,13 +6,11 @@ import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 type HandlersProps = {
   bucketName: string;
   queueUrl: string;
-  snsArn: string
 };
 
 export class Handlers extends Construct {
   public readonly importProductsFileHandler: Function;
   public readonly importFileParserHandler: Function;
-  public readonly catalogBatchProcess: Function;
 
   constructor(parent: Stack, name: string, props: HandlersProps) {
     super(parent, name);
@@ -41,14 +39,5 @@ export class Handlers extends Construct {
         },
       }
     );
-
-    this.catalogBatchProcess = new Function(this, 'CatalogBatchProcessHandler', {
-      runtime: Runtime.NODEJS_20_X,
-      code: Code.fromAsset('dist/handlers'),
-      handler: 'catalogBatchProcess.handler',
-      environment: {
-        SNS_ARN: props.snsArn,
-      },
-    });
   }
 }

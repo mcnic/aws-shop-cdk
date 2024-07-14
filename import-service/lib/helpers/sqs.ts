@@ -16,13 +16,20 @@ export const sendSQSMessage = async (
 ): Promise<ServiceOutputTypes> => {
   const command = new SendMessageCommand({
     QueueUrl: queueUrl,
-    DelaySeconds: 10,
+    DelaySeconds: 1,
     MessageBody: messageBody,
     MessageAttributes: mssageAttributes,
   });
 
   const response = await client.send(command);
-  console.log(response);
+
+  // console.log('sendSQSMessage', {
+  //   queueUrl,
+  //   messageBody,
+  //   mssageAttributes,
+  //   response,
+  // });
+
   return response;
 };
 

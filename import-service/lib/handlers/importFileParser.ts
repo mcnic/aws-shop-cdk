@@ -19,7 +19,9 @@ export const handler = async function (
       bucket: { name },
       object: { key },
     } = record.s3;
+
     console.log({ name, key, queueUrl });
+
     try {
       const readableStream = await getReadableStreamFromBucketFile(name, key);
       const results: any[] = [];

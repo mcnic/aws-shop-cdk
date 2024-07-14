@@ -4,6 +4,11 @@ import { addNewProductsToDB } from '../helpers/db';
 import { publishMessages } from '../helpers/sns';
 
 export const handler: SQSHandler = async function (event: SQSEvent) {
+  console.log({
+    r: event.Records,
+    apn: process.env.SNS_ARN,
+  });
+
   const products: NewProduct[] = [];
   for (const message of event.Records) {
     try {
@@ -20,10 +25,12 @@ export const handler: SQSHandler = async function (event: SQSEvent) {
   if (!process.env.SNS_ARN) {
     throw new Error('wrong SNS_ARN');
   }
+  
+  console.log({ products });
 
-  if(!products.length) {
+  if (!products.length) {
     await publishMessages(process.env.SNS_ARN, 'empty data for import');
-    return
+    return;
   }
 
   await addNewProductsToDB(products);

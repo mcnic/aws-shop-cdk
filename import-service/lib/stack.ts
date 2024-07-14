@@ -5,11 +5,9 @@ import { S3Actions, S3Bucket } from './constructs/s3Bucket';
 import { config } from './config';
 import { Handlers } from './constructs/handlers';
 import { ImportsAPI } from './constructs/api';
-import { SQS } from './constructs/sqs';
-import { Duration } from 'aws-cdk-lib';
-import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import { grantDBPermissionForHandler } from './helpers/db';
-import { SNS } from './constructs/sns';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { SQS_URL, SQS_ARN } from '../../constans';
 
 export class ImportServiceStack extends cdk.Stack {
   public readonly bucket: Bucket;
@@ -28,20 +26,27 @@ export class ImportServiceStack extends cdk.Stack {
     );
 
     // Create SQS queue
-    const { queue } = new SQS(this, 'CatalogItemsQueue', {});
-
-    // Create SNS for email messaging
-    const snsConstruct = new SNS(this, 'CatalogItemsSNS');
+    const queue = new Queue(this, 'ImportProductsQueue', {
+      queueName: 'ImportProductsQueue',
+      encryption: QueueEncryption.SQS_MANAGED,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
 
     // Create lambda handlerts
-    const {
-      importProductsFileHandler,
-      importFileParserHandler,
-      catalogBatchProcess,
-    } = new Handlers(this, 'importProducts', {
-      bucketName: config.bucketName,
-      queueUrl: queue.queueUrl,
-      snsArn: snsConstruct.topic.topicArn,
+    const { importProductsFileHandler, importFileParserHandler } = new Handlers(
+      this,
+      'importProducts',
+      {
+        bucketName: config.bucketName,
+        queueUrl: queue.queueUrl,
+      }
+    );
+
+    // SQS permissions
+    new PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [queue.queueArn],
+      effect: Effect.ALLOW,
     });
 
     // Import file: grant permissions for importProductsFileHandler
@@ -71,7 +76,6 @@ export class ImportServiceStack extends cdk.Stack {
       config.uploadPath
     );
     queue.grantSendMessages(importFileParserHandler);
-    snsConstruct.addPermisions(importFileParserHandler);
 
     // Add event to start parsing new file
     uploadBucketConstruct.addEvent(
@@ -80,16 +84,15 @@ export class ImportServiceStack extends cdk.Stack {
       config.uploadPath
     );
 
-    // Consuming an SQS to getting messages from queue
-    catalogBatchProcess.addEventSource(
-      new SqsEventSource(queue, {
-        batchSize: 5,
-        maxBatchingWindow: Duration.minutes(5),
-        reportBatchItemFailures: true,
-      })
-    );
-    queue.grantConsumeMessages(catalogBatchProcess);
+    // export sqs params
+    new cdk.CfnOutput(this, 'ImportProductsQueueUrl', {
+      value: queue.queueUrl,
+      exportName: SQS_URL,
+    });
 
-    grantDBPermissionForHandler(this, catalogBatchProcess);
+    new cdk.CfnOutput(this, 'ImportProductsQueueArn', {
+      value: queue.queueArn,
+      exportName: SQS_ARN,
+    });
   }
 }

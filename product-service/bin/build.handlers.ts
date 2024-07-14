@@ -8,5 +8,5 @@ esbuild.build({
   platform: 'node',
   target: 'node20',
   format: 'cjs',
-  minify: true,
+  minify: false,
 });
