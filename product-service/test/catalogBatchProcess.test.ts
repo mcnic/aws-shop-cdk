@@ -1,6 +1,6 @@
 import 'aws-sdk-client-mock-jest';
 import { Context, SQSEvent } from 'aws-lambda';
-import { handler } from '../lib/handlers/catalogBatchProcess';
+import { handler } from '../src/handlers/catalogBatchProcess';
 import { mockClient } from 'aws-sdk-client-mock';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
