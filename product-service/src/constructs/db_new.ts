@@ -16,7 +16,7 @@ export class DymanoDBTables extends Construct {
   constructor(parent: Stack, name: string) {
     super(parent, name);
 
-    this.productsTable = new TableV2(this, 'Products', {
+    this.productsTable = new TableV2(this, config.PRODUCTS_TABLE_NAME, {
       tableName: config.PRODUCTS_TABLE_NAME,
       partitionKey: {
         name: 'id',
@@ -27,7 +27,7 @@ export class DymanoDBTables extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.stocksTable = new TableV2(this, 'Stocks', {
+    this.stocksTable = new TableV2(this, config.STOCKS_TABLE_NAME, {
       tableName: config.STOCKS_TABLE_NAME,
       partitionKey: {
         name: 'product_id',

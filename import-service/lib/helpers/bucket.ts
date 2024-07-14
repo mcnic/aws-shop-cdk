@@ -3,6 +3,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   GetObjectCommandOutput,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
@@ -51,3 +52,27 @@ export const moveFileBetweenBucketFolders = async (
 
   await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: srcPath }));
 };
+
+export const listObjects = async(bucketName: string) => {
+  const listBucketObjectsCmd = new ListObjectsV2Command({
+    Bucket: bucketName,
+    // The default and maximum number of keys returned is 1000. This limits it to
+    // one for demonstration purposes.
+    MaxKeys: 100,
+  });
+
+  let isTruncated = true;
+
+  console.log('Your bucket contains the following objects:\n');
+  let contents = '';
+
+  while (isTruncated) {
+    const { Contents, IsTruncated, NextContinuationToken } =
+      await client.send(listBucketObjectsCmd);
+    const contentsList = Contents?.map((c) => ` • ${c.Key}`).join('\n') || '';
+    contents += contentsList + '\n';
+    isTruncated = IsTruncated || false;
+    listBucketObjectsCmd.input.ContinuationToken = NextContinuationToken;
+  }
+  console.log(contents);
+}

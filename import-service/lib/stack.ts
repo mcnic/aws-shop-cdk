@@ -5,20 +5,9 @@ import { S3Actions, S3Bucket } from './constructs/s3Bucket';
 import { config } from './config';
 import { Handlers } from './constructs/handlers';
 import { ImportsAPI } from './constructs/api';
-
-/*
-  Tutorial: Using an Amazon S3 trigger to invoke a Lambda function: 
-  'https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html'
-
-  New Event Notifications for Amazon S3
-  'https://aws.amazon.com/blogs/aws/s3-event-notification/'
-
-  'https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_s3_notifications/README.html'
-
-
-  [AWS] Add S3 Event Notification with CDK Typescript
-  'https://medium.com/@nagarjun_nagesh/aws-add-s3-event-notification-with-cdk-typescript-80fd55242b86'
-*/
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { SQS_URL, SQS_ARN } from '../../constans';
 
 export class ImportServiceStack extends cdk.Stack {
   public readonly bucket: Bucket;
@@ -26,7 +15,7 @@ export class ImportServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // create Bucket
+    // Create Bucket
     const uploadBucketConstruct = new S3Bucket(
       this,
       'ImportServiceBucketUploads',
@@ -36,28 +25,41 @@ export class ImportServiceStack extends cdk.Stack {
       }
     );
 
-    // create lambda handlerts
+    // Create SQS queue
+    const queue = new Queue(this, 'ImportProductsQueue', {
+      queueName: 'ImportProductsQueue',
+      encryption: QueueEncryption.SQS_MANAGED,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // Create lambda handlerts
     const { importProductsFileHandler, importFileParserHandler } = new Handlers(
       this,
       'importProducts',
       {
         bucketName: config.bucketName,
+        queueUrl: queue.queueUrl,
       }
     );
 
-    // *** Import file ***
-    // grant permissions for importProductsFileHandler
+    // SQS permissions
+    new PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [queue.queueArn],
+      effect: Effect.ALLOW,
+    });
+
+    // Import file: grant permissions for importProductsFileHandler
     uploadBucketConstruct.addPermisions(
       importProductsFileHandler,
       [S3Actions.PUT],
       config.uploadPath
     );
 
-    // add API gateways
+    // Add API gateways
     new ImportsAPI(this, 'ImportAPI', { handler: importProductsFileHandler });
 
-    // *** Parse file ***
-    // grant permissions for importFileParserHandler
+    // Parse file: grant permissions for importFileParserHandler
     uploadBucketConstruct.addPermisions(
       importFileParserHandler,
       [S3Actions.GET],
@@ -73,12 +75,24 @@ export class ImportServiceStack extends cdk.Stack {
       [S3Actions.DELETE],
       config.uploadPath
     );
+    queue.grantSendMessages(importFileParserHandler);
 
-    // add event to start parsing new file
+    // Add event to start parsing new file
     uploadBucketConstruct.addEvent(
       EventType.OBJECT_CREATED,
       importFileParserHandler,
       config.uploadPath
     );
+
+    // export sqs params
+    new cdk.CfnOutput(this, 'ImportProductsQueueUrl', {
+      value: queue.queueUrl,
+      exportName: SQS_URL,
+    });
+
+    new cdk.CfnOutput(this, 'ImportProductsQueueArn', {
+      value: queue.queueArn,
+      exportName: SQS_ARN,
+    });
   }
 }
