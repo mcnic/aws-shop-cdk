@@ -40,10 +40,7 @@ function compareTokenWithCredentials(
   user: string = '',
   pass: string = ''
 ) {
-  console.log(
-    { token, user, pass },
-    token === `Basic ${btoa(`${user}:${pass}`)}`
-  );
+  console.log({ token, user, pass, dst: btoa(`${user}:${pass}`) });
 
-  return false;
+  return token === `Basic ${btoa(`${user}:${pass}`)}`;
 }

@@ -8,7 +8,7 @@ import {
   RestApi,
   TokenAuthorizer,
 } from 'aws-cdk-lib/aws-apigateway';
-import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 type HandlersProps = {
   handler: IFunction;
@@ -31,21 +31,22 @@ export class ImportsAPI extends Construct {
       },
     });
 
-    console.log({ api: api.restApiId });
+    // console.log({ api: api.restApiId });
+
+    const authRole = new Role(this, 'authRole', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+
+    authRole.addToPolicy(
+      new PolicyStatement({
+        actions: ['lambda:InvokeFunction'],
+        resources: [props.basicAuthorizerHandlder.functionArn],
+      })
+    );
 
     const authorizer = new TokenAuthorizer(this, 'CustomBasicAuthAuthorizer', {
       handler: props.basicAuthorizerHandlder,
-      identitySource: 'method.request.header.Authorization',
-      resultsCacheTtl: Duration.seconds(0),
-    });
-
-    // Permission
-    props.basicAuthorizerHandlder.addPermission('ApiGatewayInvokePermissions', {
-      action: 'lambda:InvokeFunction',
-      principal: new ServicePrincipal('apigateway.amazonaws.com'),
-      // sourceArn: `arn:aws:execute-api:us-east-1:645331675526:${api.restApiId}/authorizers/v8gxd5`,
-      sourceArn: `arn:aws:execute-api:us-east-1:645331675526:i6gsu0m0sg`
-      // sourceArn: api.restApiId,
+      assumeRole: authRole,
     });
 
     // add API method with validation
