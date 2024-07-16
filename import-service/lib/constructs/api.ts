@@ -32,6 +32,7 @@ export class ImportsAPI extends Construct {
       },
     });
 
+    // need for correct getting error code in axios on frontend
     api.addGatewayResponse('Default4xxResponse', {
       type: ResponseType.DEFAULT_4XX,
       responseHeaders: {
