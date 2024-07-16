@@ -5,6 +5,7 @@ import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import {
   Cors,
   LambdaIntegration,
+  ResponseType,
   RestApi,
   TokenAuthorizer,
 } from 'aws-cdk-lib/aws-apigateway';
@@ -28,6 +29,13 @@ export class ImportsAPI extends Construct {
         allowMethods: Cors.ALL_METHODS,
         allowHeaders: Cors.DEFAULT_HEADERS,
         // allowCredentials: true,
+      },
+    });
+
+    api.addGatewayResponse('Default4xxResponse', {
+      type: ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
       },
     });
 
