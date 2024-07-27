@@ -8,6 +8,8 @@ import { ImportsAPI } from './constructs/api';
 import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { SQS_URL, SQS_ARN } from '../../constans';
+import { BASIC_AUTHORIZER_ARN } from '../../constans';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 export class ImportServiceStack extends cdk.Stack {
   public readonly bucket: Bucket;
@@ -56,8 +58,22 @@ export class ImportServiceStack extends cdk.Stack {
       config.uploadPath
     );
 
+    // basic authorizer
+    const authArn = cdk.Fn.importValue(BASIC_AUTHORIZER_ARN);
+    const basicAuthorizerHandlder = NodejsFunction.fromFunctionArn(
+      this,
+      'BasicAuthorizer',
+      authArn
+    );
+
+    console.log('auth arn', cdk.Fn.importValue(BASIC_AUTHORIZER_ARN));
+
     // Add API gateways
-    new ImportsAPI(this, 'ImportAPI', { handler: importProductsFileHandler });
+    new ImportsAPI(this, 'ImportAPI', {
+      handler: importProductsFileHandler,
+      basicAuthorizerHandlder,
+      sourceArn: authArn,
+    });
 
     // Parse file: grant permissions for importFileParserHandler
     uploadBucketConstruct.addPermisions(

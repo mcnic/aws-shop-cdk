@@ -1,11 +1,20 @@
 #!/usr/bin/env node
-import { Stack } from 'aws-cdk-lib';
+import { Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import {
+  Cors,
+  LambdaIntegration,
+  ResponseType,
+  RestApi,
+  TokenAuthorizer,
+} from 'aws-cdk-lib/aws-apigateway';
+import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 type HandlersProps = {
   handler: IFunction;
+  basicAuthorizerHandlder: IFunction;
+  sourceArn: string;
 };
 
 export class ImportsAPI extends Construct {
@@ -23,9 +32,36 @@ export class ImportsAPI extends Construct {
       },
     });
 
+    // need for correct getting error code in axios on frontend
+    api.addGatewayResponse('Default4xxResponse', {
+      type: ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+      },
+    });
+
+    // console.log({ api: api.restApiId });
+
+    const authRole = new Role(this, 'authRole', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+
+    authRole.addToPolicy(
+      new PolicyStatement({
+        actions: ['lambda:InvokeFunction'],
+        resources: [props.basicAuthorizerHandlder.functionArn],
+      })
+    );
+
+    const authorizer = new TokenAuthorizer(this, 'CustomBasicAuthAuthorizer', {
+      handler: props.basicAuthorizerHandlder,
+      assumeRole: authRole,
+    });
+
     // add API method with validation
     const items = api.root.addResource('import');
     items.addMethod('GET', new LambdaIntegration(props.handler), {
+      authorizer,
       requestParameters: {
         'method.request.querystring.name': true,
       },

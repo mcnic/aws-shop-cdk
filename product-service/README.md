@@ -36,4 +36,3 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 ## todo
 
 - tests is broken
-- in VSC tests are red
