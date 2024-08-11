@@ -14,6 +14,10 @@
 		{
 			"name": "authorization-service",
 			"path": "authorization-service" 
+		},
+		{
+			"name": "bff-service",
+			"path": "bff-service" 
 		}
 	],
 	"settings": {

@@ -1,0 +1,41 @@
+{
+  "name": "bff-service",
+  "version": "0.1.0",
+  "bin": {
+    "bff-service": "bin/bff-service.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "docker:build": "docker build --tag mcnic/cart-api:latest .",
+    "docker:push": "docker push mcnic/cart-api:latest",
+    "docker:start": "docker run -it --rm -p 4000:4000 mcnic/bff-api",
+    "docker:test": "docker run -it --rm -p 4000:4000 mcnic/bff-api /bin/sh",
+    "docker:up": "docker compose --env-file .env up --detach",
+    "docker:down": "docker compose down",
+    "eb:init": "eb init mcnic-cart-api",
+    "eb:create": "eb create prod --cname mcnic-bff-api --single",
+    "eb:setenv": "env-cmd -x -f .env eb setenv DATABASE_URL=\\${DATABASE_URL} SERVER_PORT=\\$SERVER_PORT PG_USER=\\$PG_USER PG_PASSWORD=\\$PG_PASSWORD PG_HOST=\\$PG_HOST",
+    "eb:deploy": "eb deploy prod",
+    "eb:terminate": "eb terminate mcnic-bff-api",
+    "eb:logs": "eb logs | grep ERROR"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "20.14.2",
+    "aws-cdk": "2.146.0",
+    "esbuild": "^0.23.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.4.5"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.146.0",
+    "constructs": "^10.0.0",
+    "dotenv": "^16.4.5",
+    "source-map-support": "^0.5.21"
+  }
+}
