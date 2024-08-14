@@ -18,12 +18,17 @@ export const handler = async function (
     params: event.pathParameters,
   });
 
-
   try {
-    const { title, description, price, count } = JSON.parse(event.body ?? '');
+    const {
+      title,
+      description,
+      price,
+      count,
+      image = '',
+    } = JSON.parse(event.body ?? '');
 
     const id = randomUUID();
-    const item = { id, title, description, price: Number(price) };
+    const item = { id, title, description, price: Number(price), image };
 
     const command = new TransactWriteCommand({
       TransactItems: [
