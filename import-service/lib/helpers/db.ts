@@ -37,8 +37,8 @@ export const addNewProductsToDB = async function (products: NewProduct[]) {
 
   for (const product of products) {
     const id = randomUUID();
-    const { title, description, price, count } = product;
-    const item = { id, title, description, price: Number(price) };
+    const { title, description, price, image } = product;
+    const item = { id, title, description, price: Number(price), image };
 
     const command = new TransactWriteCommand({
       TransactItems: [
