@@ -8,6 +8,7 @@ export type Product = {
   description: string;
   price: number;
   count: number;
+  image: string;
 };
 
 export type NewProduct = Omit<Product, 'id'>;
@@ -23,4 +24,5 @@ export const NewProductSchema = z.object({
     (a) => parseInt(z.string().parse(a), 10),
     z.number().min(0)
   ),
+  image: z.string(),
 });

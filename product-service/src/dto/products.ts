@@ -14,7 +14,8 @@ export const productStockDto: JsonSchema = {
       type: JsonSchemaType.NUMBER,
       minimum: 0,
     },
+    image: { type: JsonSchemaType.STRING },
   },
   additionalProperties: false,
-  required: ['title', 'price', 'count'],
+  required: ['title', 'price', 'count', 'image'],
 };
